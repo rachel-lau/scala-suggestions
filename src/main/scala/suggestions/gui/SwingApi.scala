@@ -10,6 +10,7 @@ import scala.util.{ Try, Success, Failure }
 import scala.swing.Reactions.Reaction
 import scala.swing.event.Event
 import rx.lang.scala.Observable
+import rx.lang.scala.subscriptions.Subscription
 
 /** Basic facilities for dealing with Swing-like components.
 *
@@ -51,7 +52,14 @@ trait SwingApi {
       * @param field the text field
       * @return an observable with a stream of text field updates
       */
-    def textValues: Observable[String] = ???
+    def textValues: Observable[String] = {
+      Observable(observer => {
+        field subscribe {
+          case ValueChanged(tf) => observer.onNext(tf.text)
+        }
+        Subscription{}
+      })
+    }
 
   }
 
